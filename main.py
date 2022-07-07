@@ -1,0 +1,173 @@
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import Qt
+
+result=0
+result_list=[]
+
+class Calculator(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Calculator")
+        self.setGeometry(850, 200, 380, 550)
+        self.setFixedSize(self.size())
+        self.ui()
+        self.show()
+
+    def ui(self):
+
+        ####################Entry Field#############
+        self.entry_box = QLineEdit(self)
+        self.entry_box.resize(335, 30)
+        self.entry_box.setAlignment(Qt.AlignRight)
+        self.entry_box.setStyleSheet(
+            'font: 14pt Arial;'
+            'border 3px solid gray;'
+            'border-radius:5px;'
+            'background-color:#e6e6fa;'
+            'color:black')
+        self.entry_box.setText("O")
+        self.entry_box.move(20, 30)
+
+        ######################Number Buttons######################
+        btn_number = []
+        for i in range(1, 10):
+            i = QPushButton(str(i), self)
+            i.setFont(QFont("Arial", 15))
+            i.resize(70, 40)
+            i.setStyleSheet('background-color:white;'
+                            'border-radius:5px;'
+                            'color:black;')
+            i.clicked.connect(self.enterNumbers)
+            btn_number.append(i)
+
+        btn_index = 0
+        for i in range(0, 3):
+            for j in range(0, 3):
+                btn_number[btn_index].move(25 + j * 90, 90 + i * 70)
+                btn_index += 1
+
+        #######################Operator Button################
+
+        btn_operator = []
+        for i in range(4):
+            i = QPushButton(self)
+            i.resize(70, 40)
+            i.setStyleSheet('background-color:white;'
+                            'border-radius:5px;'
+                            'color:black;')
+            i.setFont((QFont("Arial", 15)))
+            i.clicked.connect(self.enterOperator)
+            btn_operator.append(i)
+
+        btn_operator[0].setText("+")
+        btn_operator[1].setText("-")
+        btn_operator[2].setText("*")
+        btn_operator[3].setText("/")
+
+        for i in range(4):
+            btn_operator[i].move(290, 90 + i * 70)
+
+        ###################Other button########
+        btn_zero=QPushButton("0",self)
+        btn_zero.setStyleSheet('background-color:white;'
+                               'border-radius:5px;'
+                            'color:black;')
+        btn_zero.setFont((QFont("Arial", 15)))
+        btn_zero.resize(250,40)
+        btn_zero.move(25,300)
+        btn_zero.clicked.connect(self.enterNumbers)
+
+        ####
+        btn_clear=QPushButton("C",self)
+        btn_clear.setStyleSheet('background-color:white;'
+                                'border-radius:5px;'
+                            'color:black;')
+        btn_clear.setFont((QFont("Arial", 20)))
+        btn_clear.resize(70,40)
+        btn_clear.clicked.connect(self.funcClear)
+        btn_clear.move(25,370)
+
+        ####
+        btn_dot=QPushButton(".",self)
+        btn_dot.setStyleSheet('background-color:white;'
+                              'border-radius:5px;'
+                                'color:black;')
+        btn_dot.setFont((QFont("Arial", 15)))
+        btn_dot.resize(70, 40)
+        btn_dot.clicked.connect(self.enterNumbers)
+        btn_dot.move(115, 370)
+
+        ####
+        btn_equal=QPushButton("=",self)
+        btn_equal.setStyleSheet('background-color:white;'
+                                'border-radius:5px;'
+                              'color:black;')
+        btn_equal.setFont((QFont("Arial", 15)))
+        btn_equal.resize(70, 40)
+        btn_equal.clicked.connect(self.funcOperator)
+        btn_equal.move(205, 370)
+
+        #####
+        btn_delete=QPushButton(self)
+        btn_delete.setIcon(QIcon("icon/arrow.png"))
+        btn_delete.setStyleSheet('background-color:white;'
+                                 'border-radius:5px;'
+                                'color:black;')
+        btn_delete.setFont((QFont("Arial", 15)))
+        btn_delete.resize(70, 40)
+        btn_delete.clicked.connect(self.funcDelete)
+        btn_delete.move(290, 370)
+
+        ####
+        self.status_bar=QStatusBar()
+        self.setStatusBar(self.status_bar)
+
+
+
+    def enterNumbers(self):
+        btn_text=self.sender().text()
+        if self.entry_box.text()=="O":
+            self.entry_box.setText(btn_text)
+        else:
+            self.entry_box.setText(self.entry_box.text()+btn_text)
+
+    def enterOperator(self):
+        btn_text=self.sender().text()
+        if self.entry_box.text()!="O":
+            self.entry_box.setText(self.entry_box.text()+btn_text)
+
+    def funcClear(self):
+        self.entry_box.setText("O")
+
+    def funcDelete(self):
+        x=self.entry_box.text()
+        x=x[:-1]
+        self.entry_box.setText(x)
+        if len(x)==0:
+            self.entry_box.setText("O")
+
+    def funcOperator(self):
+
+        content=self.entry_box.text()
+        result=eval(content)
+        self.entry_box.setText(str(result))
+        result_list.append(content)
+        result_list.reverse()
+        self.status_bar.showMessage("History: "+"|".join(result_list[:5]))
+        self.status_bar.setFont(QFont("Verdana", 15))
+
+
+
+
+
+
+def main():
+    App = QApplication(sys.argv)
+    window = Calculator()
+    sys.exit(App.exec_())
+
+
+if __name__ == "__main__":
+    main()
